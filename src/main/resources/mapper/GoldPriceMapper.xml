@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coolers.aogp.aogp.dao.GoldPriceMapper">
+  <resultMap id="BaseResultMap" type="com.coolers.aogp.aogp.po.GoldPrice">
+    <id column="date" jdbcType="VARCHAR" property="date" />
+    <result column="open" jdbcType="DECIMAL" property="open" />
+    <result column="close" jdbcType="DECIMAL" property="close" />
+    <result column="lowest" jdbcType="DECIMAL" property="lowest" />
+    <result column="highest" jdbcType="DECIMAL" property="highest" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from gold_price
+    where date = #{date,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.coolers.aogp.aogp.po.GoldPrice">
+    insert into gold_price (date, open, close, 
+      lowest, highest)
+    values (#{date,jdbcType=VARCHAR}, #{open,jdbcType=DECIMAL}, #{close,jdbcType=DECIMAL}, 
+      #{lowest,jdbcType=DECIMAL}, #{highest,jdbcType=DECIMAL})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.coolers.aogp.aogp.po.GoldPrice">
+    update gold_price
+    set open = #{open,jdbcType=DECIMAL},
+      close = #{close,jdbcType=DECIMAL},
+      lowest = #{lowest,jdbcType=DECIMAL},
+      highest = #{highest,jdbcType=DECIMAL}
+    where date = #{date,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select date, open, close, lowest, highest
+    from gold_price
+    where date = #{date,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select date, open, close, lowest, highest
+    from gold_price
+  </select>
+</mapper>
