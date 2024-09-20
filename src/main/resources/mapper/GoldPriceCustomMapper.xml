@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coolers.aogp.aogp.dao.GoldPriceCustomMapper">
+
+    <select id="selectMaxDate" resultType="java.lang.String">
+        select max(date)
+        from gold_price
+    </select>
+</mapper>

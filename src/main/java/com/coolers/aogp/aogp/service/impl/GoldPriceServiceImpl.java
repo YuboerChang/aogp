@@ -22,23 +22,12 @@ public class GoldPriceServiceImpl implements GoldPriceService {
     GoldPriceQueryUtil goldPriceQueryUtil;
 
     /**
-     * @param req id空时查全部，非空时查单个的step
+     * @param req goldType为查询的黄金类型，为空时默认是"Au99.99"
      */
     @Override
     public GoldPriceRes queryGoldPrice(GoldPriceReq req) {
         GoldPriceRes res = new GoldPriceRes();
-        List<GoldPrice> list = goldPriceQueryUtil.getGoldPriceArray();
-        for (GoldPrice gp : list) {
-            if (gp.getDate().equals("2024-09-03")) {
-                GoldPrice ngp = goldPriceMapper.selectByPrimaryKey(gp.getDate());
-                if (ngp == null) {
-                    goldPriceMapper.insert(gp);
-                }
-                if (redisUtil.get(gp.getDate()) == null) {
-                    redisUtil.set(gp.getDate(), gp.toString(), 300);
-                }
-            }
-        }
+        List<GoldPrice> list = goldPriceQueryUtil.getGoldPriceList(req.getGoldType());
         res.setGoldPriceList(list);
         return res;
     }
