@@ -17,4 +17,9 @@ public class GoldPriceController {
         return goldPriceService.queryGoldPrice(req);
     }
 
+    @PostMapping("/queryGoldPriceExtreme")
+    public GoldPriceRes queryGoldPriceExtreme(GoldPriceReq req) {
+        return goldPriceService.queryGoldPriceExtreme(req);
+    }
+
 }

@@ -7,4 +7,5 @@ public interface GoldPriceService {
     public GoldPriceRes queryGoldPrice(GoldPriceReq req);
 
 
+    GoldPriceRes queryGoldPriceExtreme(GoldPriceReq req);
 }
