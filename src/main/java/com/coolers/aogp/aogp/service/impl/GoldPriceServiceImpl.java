@@ -36,7 +36,9 @@ public class GoldPriceServiceImpl implements GoldPriceService {
     public GoldPriceRes queryGoldPrice(GoldPriceReq req) {
         GoldPriceRes res = new GoldPriceRes();
         String goldType = BaseUtil.isEmptyString(req.getGoldType()) ? GoldConst.GOLD_AU9999 : req.getGoldType();
-        res.setGoldPriceList(getGoldPriceList(goldType));
+        List<GoldPrice> gpList = getGoldPriceList(goldType);
+        gpList = doSomeFilter(gpList, req);
+        res.setGoldPriceList(gpList);
         return res;
     }
 
@@ -51,6 +53,19 @@ public class GoldPriceServiceImpl implements GoldPriceService {
         }
         res.setExtremeList(extremeList);
         return res;
+    }
+
+    /**
+     * 由于数据一般直接从缓存取，查询条件不做限制，且一般数据量小，在service做过滤即可
+     */
+    private List<GoldPrice> doSomeFilter(List<GoldPrice> gpList, GoldPriceReq req) {
+        if (!BaseUtil.isEmptyString(req.getStartDate())) {
+            gpList = gpList.stream().filter(o -> o.getDate().compareTo(req.getStartDate()) >= 0).toList();
+        }
+        if (!BaseUtil.isEmptyString(req.getEndDate())) {
+            gpList = gpList.stream().filter(o -> o.getDate().compareTo(req.getEndDate()) <= 0).toList();
+        }
+        return gpList;
     }
 
     private List<GoldPrice> getGoldPriceList(String goldType) {
@@ -71,7 +86,7 @@ public class GoldPriceServiceImpl implements GoldPriceService {
 
     private void updateDataBase(List<GoldPrice> gpList) {
         String dbmaxDate = goldPriceCustomMapper.selectMaxDate();
-        for (int i = gpList.size() - 1; i >= 0; i++) {
+        for (int i = gpList.size() - 1; i >= 0; i--) {
             GoldPrice gp = gpList.get(i);
             if (!BaseUtil.isEmptyString(dbmaxDate) && gp.getDate().compareTo(dbmaxDate) <= 0) {
                 // 已更新到最新值
