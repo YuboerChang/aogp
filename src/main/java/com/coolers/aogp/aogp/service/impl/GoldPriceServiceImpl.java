@@ -37,28 +37,24 @@ public class GoldPriceServiceImpl implements GoldPriceService {
         GoldPriceRes res = new GoldPriceRes();
         String goldType = BaseUtil.isEmptyString(req.getGoldType()) ? GoldConst.GOLD_AU9999 : req.getGoldType();
         List<GoldPrice> gpList = getGoldPriceList(goldType);
-        gpList = doSomeFilter(gpList, req);
+        gpList = goldPriceFiltering(gpList, req);
         res.setGoldPriceList(gpList);
-        return res;
-    }
-
-    @Override
-    public GoldPriceRes queryGoldPriceExtreme(GoldPriceReq req) {
-        GoldPriceRes res = new GoldPriceRes();
-        String goldType = BaseUtil.isEmptyString(req.getGoldType()) ? GoldConst.GOLD_AU9999 : req.getGoldType();
+        // 查询价格极值
         List<GoldPriceExtreme> extremeList = redisUtil.get(goldType + LocalDate.now() + "extremeList");
         if (BaseUtil.isEmptyList(extremeList)) {
             extremeList = goldPriceUtil.getGoldPriceExtreme(getGoldPriceList(goldType));
             redisUtil.set(goldType + LocalDate.now() + "extremeList", extremeList, BaseUtil.getSurplusTimeToday());
         }
+        extremeList = extremeFiltering(extremeList, req);
         res.setExtremeList(extremeList);
         return res;
     }
 
+
     /**
      * 由于数据一般直接从缓存取，查询条件不做限制，且一般数据量小，在service做过滤即可
      */
-    private List<GoldPrice> doSomeFilter(List<GoldPrice> gpList, GoldPriceReq req) {
+    private List<GoldPrice> goldPriceFiltering(List<GoldPrice> gpList, GoldPriceReq req) {
         if (!BaseUtil.isEmptyString(req.getStartDate())) {
             gpList = gpList.stream().filter(o -> o.getDate().compareTo(req.getStartDate()) >= 0).toList();
         }
@@ -67,6 +63,17 @@ public class GoldPriceServiceImpl implements GoldPriceService {
         }
         return gpList;
     }
+
+    private List<GoldPriceExtreme> extremeFiltering(List<GoldPriceExtreme> extremeList, GoldPriceReq req) {
+        if (!BaseUtil.isEmptyString(req.getStartDate())) {
+            extremeList = extremeList.stream().filter(o -> o.getDate().compareTo(req.getStartDate()) >= 0).toList();
+        }
+        if (!BaseUtil.isEmptyString(req.getEndDate())) {
+            extremeList = extremeList.stream().filter(o -> o.getDate().compareTo(req.getEndDate()) <= 0).toList();
+        }
+        return extremeList;
+    }
+
 
     private List<GoldPrice> getGoldPriceList(String goldType) {
         List<GoldPrice> gpList = redisUtil.get(goldType + LocalDate.now() + "goldPriceList");

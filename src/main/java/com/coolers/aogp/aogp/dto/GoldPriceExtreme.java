@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -12,4 +13,5 @@ import java.math.BigDecimal;
 public class GoldPriceExtreme {
     private String date;
     private String type;
+    private List<Map<String,String>> interval;
 }

@@ -6,6 +6,4 @@ import com.coolers.aogp.aogp.vo.GoldPriceRes;
 public interface GoldPriceService {
     public GoldPriceRes queryGoldPrice(GoldPriceReq req);
 
-
-    GoldPriceRes queryGoldPriceExtreme(GoldPriceReq req);
 }

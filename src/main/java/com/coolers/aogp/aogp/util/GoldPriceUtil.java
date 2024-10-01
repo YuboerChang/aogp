@@ -11,7 +11,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class GoldPriceUtil {
@@ -52,11 +54,16 @@ public class GoldPriceUtil {
         ArrayList<GoldPriceExtreme> extremes = new ArrayList<>();
         for (int index = 3, border = gpList.size() - 3; index < border; index++) {
             String type = judgeExtreme(gpList, index);
-            if (type.equals(GoldConst.TOP)) {
-                GoldPriceExtreme extreme = new GoldPriceExtreme(gpList.get(index).getDate(), type);
-                extremes.add(extreme);
-            } else if (type.equals(GoldConst.DOW)) {
-                GoldPriceExtreme extreme = new GoldPriceExtreme(gpList.get(index).getDate(), type);
+            if (type.equals(GoldConst.TOP) || type.equals(GoldConst.DOW)) {
+                // 组装前端要用到的x轴标记坐标
+                List<Map<String, String>> xAxis = new ArrayList<>();
+                Map<String, String> xAxisStart = new HashMap<>();
+                xAxisStart.put("xAxis", gpList.get(index - 1).getDate());
+                xAxis.add(xAxisStart);
+                Map<String, String> xAxisEnd = new HashMap<>();
+                xAxisEnd.put("xAxis", gpList.get(index + 1).getDate());
+                xAxis.add(xAxisEnd);
+                GoldPriceExtreme extreme = new GoldPriceExtreme(gpList.get(index).getDate(), type, xAxis);
                 extremes.add(extreme);
             }
         }
