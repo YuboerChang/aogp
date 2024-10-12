@@ -95,4 +95,30 @@ public class GoldPriceUtil {
         return extreme;
     }
 
+    /**
+     * 黄金价格列表过滤，目前支持日期过滤
+     */
+    public List<GoldPrice> goldPriceFiltering(List<GoldPrice> gpList, String startDate, String endDate) {
+        if (!BaseUtil.isEmptyString(startDate)) {
+            gpList = gpList.stream().filter(o -> o.getDate().compareTo(startDate) >= 0).toList();
+        }
+        if (!BaseUtil.isEmptyString(endDate)) {
+            gpList = gpList.stream().filter(o -> o.getDate().compareTo(endDate) <= 0).toList();
+        }
+        return gpList;
+    }
+
+    /**
+     * 黄金价格极值列表过滤，目前支持日期过滤
+     */
+    public List<GoldPriceExtreme> extremeFiltering(List<GoldPriceExtreme> extremeList, String startDate, String endDate) {
+        if (!BaseUtil.isEmptyString(startDate)) {
+            extremeList = extremeList.stream().filter(o -> o.getDate().compareTo(startDate) >= 0).toList();
+        }
+        if (!BaseUtil.isEmptyString(endDate)) {
+            extremeList = extremeList.stream().filter(o -> o.getDate().compareTo(endDate) <= 0).toList();
+        }
+        return extremeList;
+    }
+
 }
