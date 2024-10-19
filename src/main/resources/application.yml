@@ -26,8 +26,8 @@ spring:
         max-wait: 10000
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.coolers.housekeep.housekeep.po
-#logging:
-#  config: classpath:logback-spring.xml
-#  file:
-#    name: web-app
+  type-aliases-package: com.coolers.aogp.aogp.po
+logging:
+  config: classpath:logback-spring.xml
+  file:
+    name: web-app

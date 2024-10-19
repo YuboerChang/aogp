@@ -10,12 +10,10 @@ import com.coolers.aogp.aogp.service.GoldPriceService;
 import com.coolers.aogp.aogp.util.BaseUtil;
 import com.coolers.aogp.aogp.util.GoldPriceUtil;
 import com.coolers.aogp.aogp.util.RedisUtil;
-import com.coolers.aogp.aogp.vo.AdviseReq;
-import com.coolers.aogp.aogp.vo.AdviseRes;
-import com.coolers.aogp.aogp.vo.GoldPriceReq;
-import com.coolers.aogp.aogp.vo.GoldPriceRes;
+import com.coolers.aogp.aogp.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -69,6 +67,27 @@ public class GoldPriceServiceImpl implements GoldPriceService {
         return res;
     }
 
+    /**
+     * 通过日期查询当日的黄金价格，没有查到则直接返回
+     * res的价格已初始化为0，代表未查到数据
+     */
+    @Override
+    public DaysPriceRes queryDaysPrice(DaysPriceReq req) {
+        DaysPriceRes res = new DaysPriceRes();
+        List<GoldPrice> gpList = getGoldPriceList(req.getGoldType());
+        for (int i = gpList.size() - 1; i >= 0; i--) {
+            // 一般查询都是最近的日期，直接倒序查找
+            if (gpList.get(i).getDate().equals(req.getDate())) {
+                res.setPrice(gpList.get(i).getClose());
+                break;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 获取黄金价格列表
+     */
     private List<GoldPrice> getGoldPriceList(String goldType) {
         List<GoldPrice> gpList = redisUtil.get(goldType + LocalDate.now() + "goldPriceList");
         // 查看DB是否已更新过数据，当天未更新则查上金所数据并更新DB
@@ -98,6 +117,7 @@ public class GoldPriceServiceImpl implements GoldPriceService {
         return extremeList;
     }
 
+    @Transactional
     private void updateDataBase(List<GoldPrice> gpList) {
         String dbRecentDate = goldPriceCustomMapper.selectMaxDate();
         for (int i = gpList.size() - 1; i >= 0; i--) {
@@ -109,6 +129,5 @@ public class GoldPriceServiceImpl implements GoldPriceService {
             goldPriceMapper.insert(gp);
         }
     }
-
 
 }
